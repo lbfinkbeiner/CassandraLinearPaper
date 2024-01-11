@@ -248,14 +248,16 @@ The final training LHS had an $s^*$ of 0.07972 in the massive case and
 to quantitatively explore the impact of the LHS's $s^*$ on the performance
 of the emulator, we created three additional emulators of different $s^*$
 values and compared their performance using the test set for the default
-emulator, which is also the one with the highest $s^*$.
+emulator.
 
 In figure~\ref{fig: minsep_experiment}, we have prepared two histograms to
 compare the errors from the four emulators. Surprisingly, $s^*$ does not
 appear to affect the error distribution in any distinct way. As a further
 step, we include tables~\ref{tab: minsep_experiment_delta_stats}
 and~\ref{tab: minsep_experiment_percerr_stats}. None of the columns evolves
-in a consistent manner, and so we call the experiment inconclusive.
+in a consistent manner. As mentioned in section~\ref{sec: lhc}, we expected 
+the errors to consistently decrease with increasing $s^*$, as this quantity 
+communicates the evenness of the coverage of the space of cosmologies.
 
 % The following table was generated with emu_experiment_stats.ipynb
 \begin{table}[ht!]
@@ -306,10 +308,6 @@ $0.0797$ & 0.002883 & 0.002255 & 0.002058 & 0.291348 \\
  \label{tab: minsep_experiment_percerr_stats}
 \end{table}
 
-As mentioned in section~\ref{sec: lhc}, we expected the errors to consistently
-decrease with increasing $s^*$, as this quantity communicates the evenness of 
-the coverage of the space of cosmologies.
-
 The tested range in $s^*$ may have been too small for us to appreciate a
 consistent impact. The scope of this experiment was limited by our approach
 to generating LHCs, as the smallest and largest $s^*$ values tested came at
@@ -332,7 +330,8 @@ LHSs is appropriate for our purposes.
   \centering
   \includegraphics[scale=0.5]{error_on_emulators/percents-hist-N_k}
   \caption[Impact of $N_k$ on Accuracy]{Histogram of median percent errors
-  	across all 5000 cosmologies tested. The test data are different for each
+  	across all 5000 cosmologies tested. The test data feature different
+  	resolutions for each
   	emulator but each test set contains 5000 spectra. We fail to observe any
   	meaningful connection between the value of $N_k$ and the shape of the
   	distribution.}
@@ -377,7 +376,7 @@ $500$ & 0.002881 & 0.002221 & 0.002088 & 0.296367 \\
 	\cprotect\caption[$N_k$ Experiment: Percent Error Statistics]{Table of
 		absolute percent error statistics
 		for emulators constructed with different $N_k$.
-		The test data are different for each
+		The test data feature different resolutions for each
   		emulator but each test set contains 5000 spectra.
 		In all
 		columns, lower values indicate preferred outcomes. ``STD:'' standard
@@ -392,11 +391,11 @@ $500$ & 0.002881 & 0.002221 & 0.002088 & 0.296367 \\
 
 Unlike with $s^*$, we lack a theoretical basis for believing $N_k$ to be a
 quantity important to the performance of the emulator. Instead, the value of
-$N_k$ should be modified by the user according to the use case. However, we
-caution that our results here cannot be interpreted as conclusive evidence
+$N_k$ should be modified by the user according to the use case. We
+caution that these results cannot be interpreted as conclusive evidence
 against $N_k$'s relevance. Our inconclusive results from the $s^*$ experiment
 suggest that our tests are not sufficiently thorough to establish a
-hyperparameter's relevance, because in that case we have a strong theoretical
+hyperparameter's relevance, because in that case we had a strong theoretical
 basis for the parameter's importance.
 
 \section{Number of Training Samples}
