@@ -243,7 +243,8 @@ on the massive-neutrino emulator.
     \label{fig: minsep_experiment}
 \end{figure}
 
-The final training LHS had an $s^*$ of 0.07972 in the massive case and 
+The final LHS for the training data has an $s^*$ of 0.07972 in the massive 
+case and 
 0.02274 in the massless case, rounded to four significant figures. In order
 to quantitatively explore the impact of the LHS's $s^*$ on the performance
 of the emulator, we created three additional emulators of different $s^*$
@@ -300,7 +301,7 @@ $0.0797$ & 0.002883 & 0.002255 & 0.002058 & 0.291348 \\
 		columns, lower values indicate preferred outcomes. ``STD:'' standard
 		deviation. ``PTP:'' peak-to-peak, or the difference in the maximum
 		and minimum values. None of the columns shows an expected trend.
-		We consider it a coincidence that the maximum PTP in percent error
+		We suspect it is a coincidence that the maximum PTP in percent error
 		\textit{increases} consistently with increasing $s^*$, especially
 		since the corresponding column in the absolute errors
 		(see table~\ref{tab: minsep_experiment_delta_stats}) lacks this
@@ -510,16 +511,17 @@ sections~\ref{sec: error_from_lhc} and~\ref{sec: Nk_experiment}.
 
 We also point out that the trends, while unambiguous, are surprisingly
 subtle. Proportionally, for example, the median median percent error does
-decrease by almost 50\%, but the value at $N_s=3000$ already falls well below
-the error bounds of CAMB itself.
-This suggests that the emulator error is already in a regime of
-diminishing returns even by $N_s = 3000$. Future studies could extend this
+decrease by almost a third, but the value at $N_s=3000$ already falls well 
+below the error bounds of CAMB itself. This suggests that at $N_s = 3000$
+the emulator error is already in a regime of
+diminishing returns. Future studies could extend this
 investigation by building emulators with $N_s = 2000$ and lower.
 
 However, for users concerned with worst-case performance regardless of its
 rarity, increasing $N_s$ further may be worthwhile. Consider, for example,
 that the worst-case error for the $N_s = 7000$ emulator spans a dynamic range
-almost three times smaller than that for the $N_s = 3000$ emulator.
+almost three times smaller than that for the $N_s = 3000$ emulator. However,
+larger data sets will lead to slower emulators.
 
 The results of this chapter lead us to suggest that the accuracies given for
 our default emulator are broadly representative of the code's abilities, as
