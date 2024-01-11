@@ -339,18 +339,21 @@ LHSs is appropriate for our purposes.
   \label{fig: Nk_experiment}
 \end{figure}
 
-To understand the impact of our choice of $N_k = 300$ for the emulator, we
-also constructed and tested emulators for $N_k = 100$, 200, 400, and 500.
-To control for interpolation error, each emulator has its own test set where
-the test spectra have the same $N_k$. The
-difference in test sets contributes random error that obscures the comparison.
-We are interested in whether our GPR infrastructure is less efficient at
-learning lower- than higher-resolution spectra.
+We are also interested in whether our GPR infrastructure is less efficient at
+learning lower- than higher-resolution spectra. To understand the impact of 
+our choice of $N_k = 300$, we constructed and tested emulators for
+$N_k = 100$, 200, 400, and 500.
 
-The absolute errors cannot be directly compared across different emulators.
-This is because the $N_k = 500$ emulator is tested at five times as many
-points as the $N_k = 100$ emulator. Consequently, for this section, we focus
-exclusively on percent errors.
+To control for interpolation error, each emulator has its own training and
+testing spectra evaluated at $N_k$ bins. All of these spectra are
+generated from the same starting LHSs, so there should be no difference
+between the data sets besides their resolution.
+
+The absolute errors cannot be directly compared across different emulators;
+because the $N_k = 500$ emulator is tested at five times as many points as the 
+$N_k = 100$ emulator, adding a constant bias to both emulators would increase
+the absolute error in the $N_k = 500$ by five times as much. Consequently, for 
+this section, we focus exclusively on percent errors.
 
 In figure~\ref{fig: Nk_experiment}, we show a histogram of the median absolute
 percent errors. The histograms are difficult to distinguish and do not admit
