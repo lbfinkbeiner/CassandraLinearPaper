@@ -3,7 +3,8 @@
 
 Now that we have a solution which allows integration of massive neutrinos
 into the evolution mapping framework, we are ready to plan and build the
-machinery which leads to an emulator. CL represents a full emulation pipeline from the generation of training and 
+machinery which leads to an emulator. CL represents a full emulation pipeline 
+from the generation of training and 
 testing data to the plotting of error statistics associated with
 the emulation. This chapter will concentrate on an accessible 
 description of the pipeline, motivations behind several key components, as
@@ -694,9 +695,8 @@ y'_i = \frac{\ln{y_i} - \bar{y}_i}{\sigma_{y_i}}
 ,\end{equation}
 
 where the $i$ subscripts indicate the index of the $k$-bin; $y'$ is the 
-normalized spectrum; $\bar{y}_i$ is the average over all
-$\bm{y} \in \matr{Y}$; and $\sigma_{y_i}$ is the 
-standard deviation over all $\bm{y} \in \matr{Y}$.
+normalized spectrum; $\bar{y}_i$ is the average of all $\log y_i$; and
+$\sigma_{y_i}$ is the standard deviation of all $\log y_i$.
 
 By contrast, as long as we keep the priors separate from the unit LHS, we can
 simply use $\matr{X}_u$ as our training data. This explains why we
