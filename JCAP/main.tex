@@ -1,8 +1,21 @@
 \documentclass[a4paper,11pt]{article}
 \usepackage{jcappub} % for details on the use of the package, please see the JINST-author-manual
-\usepackage{lineno}
-\linenumbers
+%\usepackage{lineno}
 
+% Bonus packages just for Lukas
+\usepackage{cprotect}
+\usepackage{xcolor}
+
+% This code formatting sucks but I don't want to output extra spaces.
+\newcommand{\cbib}[1]
+{\IfFileExists{biblatex.sty}
+{\citep{#1}}
+{[citation ``#1'' cannot be linked in the current environment]}}
+
+% If you want to reveal self-comments, activate the first of the following two
+% lines.
+\newcommand{\selfcomment}[1]{\textcolor{orange}{#1}}
+%\newcommand{\selfcomment}[1]{}
 
 \arxivnumber{1234.56789} % Only if you have one
 \title{\boldmath A title with some math: $x=1$}
@@ -36,14 +49,14 @@
 %% \affiliation[b]{Institution_2,\\Address, Country}
 %% \affiliation[c]{Institution_3,\\Address, Country}
 
-\author{A. Uthor}
-\affiliation{One University,\\
-some-street, Country}
-\affiliation{Another University,\\
-different-address, Country}
+\author{Lukas Finkbeiner}
+\author{Ariel G. S\'{a}nchez}
+\author{Andrea S. Pezzotta}
+\affiliation{Max Planck Institute for Extraterrestrial Physics,\\
+Gießbachstraße 1, Munich, Germany}
 
 % E-mail addresses: only for the corresponding author
-\emailAdd{first@one.univ}
+\emailAdd{lfinkbei@mpe.mpg.de}
 
 \abstract{Abstract...}
 
@@ -57,8 +70,211 @@ different-address, Country}
 \maketitle
 \flushbottom
 
-\section{Some examples}
+\section{Introduction}
 \label{sec:intro}
+
+\subsection{Evolution Mapping}
+
+\citet{San21} proposes to divide up the full set of cosmological
+parameters into the two categories introduced in section~\ref{sec: Pk_intro}: 
+shape parameters $\Theta_s$ and evolution parameters $\Theta_e$.
+Shape parameters affect the shape of the power spectrum. Examples include
+$\omega_b$, $\omega_c$, and $n_s$.
+Evolution parameters affect only its amplitude. They are so called because
+their impact on the linear-theory power spectrum is 
+indistinguishable from a time evolution of the power 
+spectrum. This means that varying the redshift at which we evaluate the power
+spectrum will affect only its amplitude. $h$, $\omega_k$ and
+$\omega_\text{DE}$ are examples of evolution parameters. 
+
+We adapt equation 13 from \citet{San21} to write:
+
+\begin{equation}
+\label{eq: evMapping_pSpectrum}
+    P_L (k | z, \Theta_s, \Theta_e)
+    =
+    P_L (k | \Theta_s, \sigma_{12} \left( z, \Theta_s, \Theta_e \right))
+\end{equation}
+
+which we call the \textit{evolution mapping relation} for the power
+spectrum.\footnote{As mentioned before, varying $z$ has the effect of varying 
+an evolution parameter, so it appears on the RHS only as an argument 
+to the $\sigma_{12}$ ``function.'' We write it separately from
+$\Theta_e$ to
+emphasize that $z$ does not describe a property of the Universe, but is
+simply used as a proxy here for conformal time
+elapsed since the Big Bang.} 
+We stress that the evolution mapping relation does not hold when $P_L$ is
+expressed in $h$ units.
+
+%s In action: relabel some power spectra
+
+The evolution mapping relation tells us that any two cosmologies with 
+identical shape
+parameters will yield identical power spectra as long we match the value of
+$\sigma_{12}$. This matching can be accomplished merely by varying the 
+redshift at which the power spectrum is evaluated.
+Figure~\ref{fig: ev_mapping_demo} shows the results of this technique applied
+to seven different cosmologies sharing shape parameters and differing only
+in evolution parameters.
+
+\begin{figure}[ht!]
+  \centering
+  \includegraphics[width=\textwidth]{intro/san21f2}
+  \cprotect\caption[Demonstration of evolution mapping]{Power spectra matched
+  	in $\sigma_{12}$ via evaluation at different redshifts. For each value of
+  	$\sigma_{12}$
+  	shown here, eight Aletheia models were plotted in different
+  	colors. Each set of lines is tightly distributed and thereby demonstrates 
+  	the excellent agreement of power spectra from $\sigma_{12}$-matched
+  	cosmologies that agree in their shape parameters. This figure was
+  	inspired by figure 2 from \citet{San21}. Aletheia model 0 was related in
+  	table~\ref{tab: Aletheia_m0}. For details on the rest of the Aletheia
+  	models, refer to the file
+  	\verb|cosmologies.dat|\footnotemark
+  	\, in the CL GitHub repository.}
+  \label{fig: ev_mapping_demo}
+\end{figure}
+
+\footnotetext{\url{https://github.com/3276908917/Master/blob/main/cassL/cosmologies.dat}}
+
+%s Now conclude with the significance
+
+Evolution mapping is essential to this work because it greatly simplifies the 
+parameter space over which we train our emulator. We can express the impact of
+all evolution parameters through their impact on $\sigma_{12}$. Consequently, 
+we need only train the emulator over the shape parameters and $\sigma_{12}$.
+Simplifying the parameter space will
+result in increased accuracy for our emulator because our training samples
+will be efficiently distributed throughout the parameter space. By contrast,
+if we explicitly trained over additional evolution parameters, the same set of
+training samples would much less densely cover the parameter space.
+
+\subsection{Emulation}
+\label{sec: emulation_intro}
+
+Boltzmann codes typically take on the order of three seconds to evaluate the
+linear matter power spectrum for a given cosmological configuration. In a
+modern Monte Carlo Markov Chain analysis, tens of thousands of such
+configurations will need to be evaluated. Therefore, power
+spectra evaluation becomes a bottleneck of the analysis.
+
+This motivates the use of emulators, which rely on multi-dimensional 
+interpolation instead of the equations of evolution. Emulators are trained 
+over large numbers of power spectra either computed
+by a Boltzmann solver or from an N-body simulation. Power spectra emulation 
+has been shown to achieve excellent accuracy with computation times shorter
+by several orders of magnitude.\footnote{Of course, the accuracy of a
+well-constructed emulator will ultimately still be limited by the accuracy of 
+the input power spectra. Recall in the case of CAMB that this is 0.1\%
+\cbib{Seljak}.}
+
+Emulators apply different machine
+learning approaches in order to transform between cosmological
+configurations and power spectra. The two most common choices are neural 
+networks (NNs), which optimize the weights and biases on a set of connected 
+nodes, and Gaussian process regressions (GPRs), which apply Bayes' theorem to  
+iteratively tighten the variance of a distribution of random functions.
+
+Emulators interpolate across a high-dimensional parameter space. This presents
+a fundamental limitation: emulators must be built with the same parameter
+space over which end users require for their analyses. If additional
+parameters or wider priors are needed, then new emulators need to be trained.
+Yet there is a large number of different cosmological parameters discussed in 
+the modern literature. Emulator flexibility and generality is desirable, but 
+comes at the price of a significantly more sample-expensive training phase in
+order to maintain accuracy levels.
+
+% Cut paragraph. It's mostly incorrect
+\begin{comment}
+	However, due to the
+generality-accuracy tradeoff, currently available emulators tend to sample
+only sample a few cosmological parameters and over restrictive ranges
+\cbib{San21}. \textcolor{red}{This comment only applied to the emulators
+trained over N-body simulations, right? So it would probably be inappropriate
+to mention it in this paper, since we are emulating over Boltzmann solver
+spectra}.
+
+	``Due to the high computational cost of the required
+	simulations, [...] current emulators leave out parameters such as the
+	curvature of the Universe or dynamic energy models beyond the standard CPL
+	parametrization'' (\cbib{San21}).
+\end{comment}
+
+The effectiveness of emulation has given rise to considerable popularity, and
+several emulators of linear and nonlinear power spectra have been put 
+forth in the literature.\footnote{Linear and nonlinear power spectra have 
+different
+applications. Linear power spectra can be used to predict $P_\text{NL}(k)$, 
+such as in perturbation theory approaches. Furthermore, most non-linear 
+emulators actually predict the ratio of the non-linear power spectrum to its 
+linear counterpart, so $P_\text{L}(k)$ is still necessary to evaluate
+$P_\text{NL}(k)$.}
+\verb|baccoemu| includes both nonlinear and linear power spectrum emulators 
+based on NNs. The quoted accuracies in the linear case are
+0.2\% for redshifts $z \lesssim 3$ and
+0.5\% for redshifts $z \lesssim 9$. This emulator is trained over 216000
+\verb|CLASS|
+models in 600 $k$-bins $10^{-4} \leq k$ [$h$ Mpc$^{-1}$] $\leq 50$ and 
+includes massive neutrinos \cbib{Arico}. \verb|CosmoPower| also uses an NN
+to emulate both linear and nonlinear power spectra. It was trained over
+180,000 spectra in 420 $k$-bins over the ranges
+$10^{-5} \leq k $ Mpc$^{-1} \leq 10$ and 
+$0 \leq z \leq 5$. The authors have verified
+its accuracy on a full inference pipeline, demonstrating that the results
+are in excellent agreement regardless of the choice between \verb|CAMB| and
+\verb|CLASS| for the calculation of the training spectra. In the linear case,
+\citet{Mancini} quote errors of less than 0.1\%. 
+
+\verb|COMET| is of particular interest to this work because it has already
+successfully demonstrated the application of evolution mapping to the task of
+linear power spectrum emulation. \verb|COMET| uses GPR, although the 
+development team
+has recently decided to switch to an NN \cbib{Eggemeier}.
+
+\selfcomment{I need material on the accuracy and ranges over which
+COMET can operate.}
+
+% Other things we could talk about: make more explicit that we are using a
+% large # Boltzmann / N-body power spectra in order to train the emulator in
+% the first place. This of course means that the accuracy will eventually be
+% limited by the accuracy of the input spectra...
+
+% This section really is short. Am I forgetting to talk about anything?
+
+In this work, we apply a GPR to emulate power spectra. A Gaussian Process 
+(GP) is a Gaussian distribution over random functions,\footnote{The functions
+themselves are deterministic.} which can be interpreted
+as the infinite-dimensional generalization of the multivariate normal
+distribution. The inference of continuous values with a GP prior
+is known as Gaussian process regression, or Kriging. GPR is a
+powerful non-linear multivariate interpolation tool because in addition to
+allowing conventional predictions, GPR can also give us an uncertainty on the
+prediction, which is not typically obtained when training an NN.
+
+\selfcomment{I should put some equations here, to outline the basics
+For example, I could refer to
+\url{https://gaussianprocess.org/gpml/chapters/RW.pdf} as the COMET paper
+does.}
+
+NNs represent the most common approach in the literature. We elect to use a
+GPR for this work for several reasons. Most importantly, we find it to be
+a considerably simpler approach, more accessible to novices.
+NNs invariably require much more complicated setup and tuning in the precise 
+architecture and hyperparameter values (nodes per layer, learning rate, etc.) 
+By contrast, as we explain in section~\ref{sec: train_emu}, a Gaussian
+process regression is highly straightforward to set up and modify.
+
+Furthermore, NNs generally need much larger sample sizes to reach comparable 
+levels of accuracy. Due to various alterations in the CL code 
+over its development, several regenerations of the various emulator data sets 
+were necessary. This practical constraint motivated the use of a GP for our
+emulator.
+
+\selfcomment{Are there other prediction approaches besides GPs and NNs? 
+If so, I need to further justify WHY we’re using GPs.
+GPs work best when there are few samples and a lot of 
+parameters, right? But why is that so? What is the math behind that?}
 
 For internal references use label-refs: see section~\ref{sec:intro}.
 Bibliographic citations can be done with "cite": refs.~\cite{a,b,c}.
