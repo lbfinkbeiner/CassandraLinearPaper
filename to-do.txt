@@ -1,0 +1,23 @@
+* Get speed plots
+	* Get 3k, 4k, 2k emu's
+* Describe the available functions.
+* I STILL need to build a testing pipeline for the codes as
+	a whole...
+
+Emu generations
+Massive
+	* 5k: A
+	* 4k: B
+	* 3k: C
+	* 2.5k?
+Massless
+	* 5k
+	* 4k
+	* 3k
+	* 2.5k?
+
+Try going down first in steps of 500, then if the error
+is too bad, reverse in steps of 250. The steps should not
+be smaller than this, I think.
+
+I change my mind, let's first test 2k after 3k, and interpolate from there...
