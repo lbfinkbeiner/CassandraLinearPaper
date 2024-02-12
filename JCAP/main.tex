@@ -5,6 +5,7 @@
 % Bonus packages just for Lukas
 \usepackage{cprotect}
 \usepackage{xcolor}
+\usepackage{verbatim}
 
 % This code formatting sucks but I don't want to output extra spaces.
 \newcommand{\cbib}[1]
@@ -60,11 +61,7 @@ Gießbachstraße 1, Munich, Germany}
 
 \abstract{Abstract...}
 
-
-
-
-
-
+\graphicspath{{./res/}}
 
 \begin{document}
 \maketitle
@@ -380,22 +377,7 @@ after the paper has been written.
 %% accessory text in footnotes.
 %% (iii) Also, please have only one work for each \bibitem.
 
-\begin{thebibliography}{99}
+\bibliographystyle{JHEP}
+\bibliography{biblo}
 
-\bibitem{a}
-Author,
-\emph{Title},
-\emph{J. Abbrev.} {\bf vol} (year) pg.
-
-\bibitem{b}
-Author,
-\emph{Title},
-arxiv:1234.5678.
-
-\bibitem{c}
-Author,
-\emph{Title},
-Publisher (year).
-
-\end{thebibliography}
 \end{document}
