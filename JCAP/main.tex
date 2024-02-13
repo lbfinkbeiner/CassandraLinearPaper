@@ -19,7 +19,7 @@
 %\newcommand{\selfcomment}[1]{}
 
 \arxivnumber{1234.56789} % Only if you have one
-\title{\boldmath A title with some math: $x=1$}
+\title{\boldmath Aleitheia-Linear: Emulation of $P_L(k)$ for Massive-Neutrino Cosmologies}
 
 % Collaborations
 
@@ -59,7 +59,26 @@ Gießbachstraße 1, Munich, Germany}
 % E-mail addresses: only for the corresponding author
 \emailAdd{lfinkbei@mpe.mpg.de}
 
-\abstract{Abstract...}
+\abstract{Galaxy clustering and gravitational weak lensing measurements of the large-scale structure of the
+Universe can be used to obtain tight constraints on cosmological parameters. The parameter
+inference requires evaluations of the corresponding theoretical predictions for thousands of
+different cosmologies. These evaluations entail the computation of the linear-theory matter power
+spectrum, $P_L(k)$, using Boltzmann solvers such as CAMB and CLASS. Although individual calls to
+Boltzmann solvers take time on the order of a second, the required repeated calls become a
+bottleneck of the analysis and result in total computing times of several days. Emulation has gained
+popularity by returning results 2-3 orders of magnitude more quickly, with only minor loss of
+accuracy. This is achieved by training a Gaussian process or neural network to interpolate among
+many solutions calculated by a Boltzmann code. When the input parameter space of an emulator is
+too large, the performance suffers. Evolution mapping is a novel technique for reducing this input
+space by exploiting a degeneracy in the impact of several cosmological parameters on the power
+spectrum. Massive neutrinos represent a challenge to this framework by introducing a scale
+dependence in the growth factor, which partially undermines the degeneracy. In this work, we
+extend the principle of evolution mapping to properly account for massive neutrinos and showcase
+several emulators trained under this modified framework. We introduce a code that automates the
+training and testing of emulators so that different hyperparameter configurations (such as the
+parameter priors) may be easily considered. We also introduce a separate user-friendly code which
+simplifies access to the constructed emulators so that no background knowledge of the training
+pipeline is required.}
 
 \graphicspath{{./res/}}
 
@@ -70,82 +89,16 @@ Gießbachstraße 1, Munich, Germany}
 \section{Introduction}
 \label{sec:intro}
 
-\subsection{Evolution Mapping}
-
-\citet{San21} proposes to divide up the full set of cosmological
-parameters into the two categories introduced in section~\ref{sec: Pk_intro}: 
-shape parameters $\Theta_s$ and evolution parameters $\Theta_e$.
-Shape parameters affect the shape of the power spectrum. Examples include
-$\omega_b$, $\omega_c$, and $n_s$.
-Evolution parameters affect only its amplitude. They are so called because
-their impact on the linear-theory power spectrum is 
-indistinguishable from a time evolution of the power 
-spectrum. This means that varying the redshift at which we evaluate the power
-spectrum will affect only its amplitude. $h$, $\omega_k$ and
-$\omega_\text{DE}$ are examples of evolution parameters. 
-
-We adapt equation 13 from \citet{San21} to write:
-
-\begin{equation}
-\label{eq: evMapping_pSpectrum}
-    P_L (k | z, \Theta_s, \Theta_e)
-    =
-    P_L (k | \Theta_s, \sigma_{12} \left( z, \Theta_s, \Theta_e \right))
-\end{equation}
-
-which we call the \textit{evolution mapping relation} for the power
-spectrum.\footnote{As mentioned before, varying $z$ has the effect of varying 
-an evolution parameter, so it appears on the RHS only as an argument 
-to the $\sigma_{12}$ ``function.'' We write it separately from
-$\Theta_e$ to
-emphasize that $z$ does not describe a property of the Universe, but is
-simply used as a proxy here for conformal time
-elapsed since the Big Bang.} 
-We stress that the evolution mapping relation does not hold when $P_L$ is
-expressed in $h$ units.
-
-%s In action: relabel some power spectra
-
-The evolution mapping relation tells us that any two cosmologies with 
-identical shape
-parameters will yield identical power spectra as long we match the value of
-$\sigma_{12}$. This matching can be accomplished merely by varying the 
-redshift at which the power spectrum is evaluated.
-Figure~\ref{fig: ev_mapping_demo} shows the results of this technique applied
-to seven different cosmologies sharing shape parameters and differing only
-in evolution parameters.
-
-\begin{figure}[ht!]
-  \centering
-  \includegraphics[width=\textwidth]{intro/san21f2}
-  \cprotect\caption[Demonstration of evolution mapping]{Power spectra matched
-  	in $\sigma_{12}$ via evaluation at different redshifts. For each value of
-  	$\sigma_{12}$
-  	shown here, eight Aletheia models were plotted in different
-  	colors. Each set of lines is tightly distributed and thereby demonstrates 
-  	the excellent agreement of power spectra from $\sigma_{12}$-matched
-  	cosmologies that agree in their shape parameters. This figure was
-  	inspired by figure 2 from \citet{San21}. Aletheia model 0 was related in
-  	table~\ref{tab: Aletheia_m0}. For details on the rest of the Aletheia
-  	models, refer to the file
-  	\verb|cosmologies.dat|\footnotemark
-  	\, in the CL GitHub repository.}
-  \label{fig: ev_mapping_demo}
-\end{figure}
-
-\footnotetext{\url{https://github.com/3276908917/Master/blob/main/cassL/cosmologies.dat}}
-
-%s Now conclude with the significance
-
-Evolution mapping is essential to this work because it greatly simplifies the 
-parameter space over which we train our emulator. We can express the impact of
-all evolution parameters through their impact on $\sigma_{12}$. Consequently, 
-we need only train the emulator over the shape parameters and $\sigma_{12}$.
-Simplifying the parameter space will
-result in increased accuracy for our emulator because our training samples
-will be efficiently distributed throughout the parameter space. By contrast,
-if we explicitly trained over additional evolution parameters, the same set of
-training samples would much less densely cover the parameter space.
+Galaxy clustering and gravitational weak lensing measurements of the large-scale structure of the
+Universe can be used to obtain tight constraints on cosmological parameters. The parameter
+inference requires evaluations of the corresponding theoretical predictions for thousands of
+different cosmologies. These evaluations entail the computation of the linear-theory matter power
+spectrum, $P_L(k)$, using Boltzmann solvers such as CAMB and CLASS. Although individual calls to
+Boltzmann solvers take time on the order of a second, the required repeated calls become a
+bottleneck of the analysis and result in total computing times of several days. Emulation has gained
+popularity by returning results 2-3 orders of magnitude more quickly, with only minor loss of
+accuracy. This is achieved by training a Gaussian process or neural network to interpolate among
+many solutions calculated by a Boltzmann code. 
 
 \subsection{Emulation}
 \label{sec: emulation_intro}
@@ -221,7 +174,7 @@ $0 \leq z \leq 5$. The authors have verified
 its accuracy on a full inference pipeline, demonstrating that the results
 are in excellent agreement regardless of the choice between \verb|CAMB| and
 \verb|CLASS| for the calculation of the training spectra. In the linear case,
-\citet{Mancini} quote errors of less than 0.1\%. 
+\cite{Mancini} quote errors of less than 0.1\%. 
 
 \verb|COMET| is of particular interest to this work because it has already
 successfully demonstrated the application of evolution mapping to the task of
@@ -269,34 +222,98 @@ were necessary. This practical constraint motivated the use of a GP for our
 emulator.
 
 \selfcomment{Are there other prediction approaches besides GPs and NNs? 
-If so, I need to further justify WHY we’re using GPs.
+If so, I need to further justify WHY we're using GPs.
 GPs work best when there are few samples and a lot of 
 parameters, right? But why is that so? What is the math behind that?}
 
-For internal references use label-refs: see section~\ref{sec:intro}.
-Bibliographic citations can be done with "cite": refs.~\cite{a,b,c}.
-When possible, align equations on the equal sign. The package
-\texttt{amsmath} is already loaded. See \eqref{eq:x}.
+\subsection{Evolution Mapping}
+
+When the input parameter space of an emulator is
+too large, the performance suffers. Evolution mapping is a novel technique for reducing this input
+space by exploiting a degeneracy in the impact of several cosmological parameters on the power
+spectrum.
+
+S\'{a}nchez et al  proposes to divide up the full set of cosmological
+parameters into the two categories introduced in section~\ref{sec: Pk_intro}: 
+shape parameters $\Theta_s$ and evolution parameters $\Theta_e$.
+Shape parameters affect the shape of the power spectrum. Examples include
+$\omega_b$, $\omega_c$, and $n_s$.
+Evolution parameters affect only its amplitude. They are so called because
+their impact on the linear-theory power spectrum is 
+indistinguishable from a time evolution of the power 
+spectrum. This means that varying the redshift at which we evaluate the power
+spectrum will affect only its amplitude. $h$, $\omega_k$ and
+$\omega_\text{DE}$ are examples of evolution parameters. 
+
+We adapt equation 13 from \cite{San21} to write:
+
 \begin{equation}
-\label{eq:x}
-\begin{aligned}
-x &= 1 \,,
-\qquad
-y = 2 \,,
-\\
-z &= 3 \,.
-\end{aligned}
+\label{eq: evMapping_pSpectrum}
+    P_L (k | z, \Theta_s, \Theta_e)
+    =
+    P_L (k | \Theta_s, \sigma_{12} \left( z, \Theta_s, \Theta_e \right))
 \end{equation}
-Also, watch out for the punctuation at the end of the equations.
 
+which we call the \textit{evolution mapping relation} for the power
+spectrum.\footnote{As mentioned before, varying $z$ has the effect of varying 
+an evolution parameter, so it appears on the RHS only as an argument 
+to the $\sigma_{12}$ ``function.'' We write it separately from
+$\Theta_e$ to
+emphasize that $z$ does not describe a property of the Universe, but is
+simply used as a proxy here for conformal time
+elapsed since the Big Bang.} 
+We stress that the evolution mapping relation does not hold when $P_L$ is
+expressed in $h$ units.
 
-If you want some equations without the tag (number), please use the available
-starred-environments. For example:
-\begin{equation*}
-x = 1
-\end{equation*}
+%s In action: relabel some power spectra
 
-\section{Figures and tables}
+The evolution mapping relation tells us that any two cosmologies with 
+identical shape
+parameters will yield identical power spectra as long we match the value of
+$\sigma_{12}$. This matching can be accomplished merely by varying the 
+redshift at which the power spectrum is evaluated.
+Figure~\ref{fig: ev_mapping_demo} shows the results of this technique applied
+to seven different cosmologies sharing shape parameters and differing only
+in evolution parameters.
+
+\begin{figure}[ht!]
+  \centering
+  \includegraphics[width=\textwidth]{intro/san21f2}
+  \cprotect\caption[Demonstration of evolution mapping]{Power spectra matched
+  	in $\sigma_{12}$ via evaluation at different redshifts. For each value of
+  	$\sigma_{12}$
+  	shown here, eight Aletheia models were plotted in different
+  	colors. Each set of lines is tightly distributed and thereby demonstrates 
+  	the excellent agreement of power spectra from $\sigma_{12}$-matched
+  	cosmologies that agree in their shape parameters. This figure was
+  	inspired by figure 2 from \cite{San21}. Aletheia model 0 was related in
+  	table~\ref{tab: Aletheia_m0}. For details on the rest of the Aletheia
+  	models, refer to the file
+  	\verb|cosmologies.dat|\footnotemark
+  	\, in the CL GitHub repository.}
+  \label{fig: ev_mapping_demo}
+\end{figure}
+
+\footnotetext{\url{https://github.com/3276908917/Master/blob/main/cassL/cosmologies.dat}}
+
+%s Now conclude with the significance
+
+Evolution mapping is essential to this work because it greatly simplifies the 
+parameter space over which we train our emulator. We can express the impact of
+all evolution parameters through their impact on $\sigma_{12}$. Consequently, 
+we need only train the emulator over the shape parameters and $\sigma_{12}$.
+Simplifying the parameter space will
+result in increased accuracy for our emulator because our training samples
+will be efficiently distributed throughout the parameter space. By contrast,
+if we explicitly trained over additional evolution parameters, the same set of
+training samples would much less densely cover the parameter space.
+
+Massive neutrinos represent a challenge to this framework by introducing a scale
+dependence in the growth factor, which partially undermines the degeneracy. In this work, we
+extend the principle of evolution mapping to properly account for massive neutrinos and showcase
+several emulators trained under this modified framework.
+
+\section{Extending Evolution Mapping}
 
 All figures and tables should be referenced in the text and should be
 placed on the page where they are first cited or in
