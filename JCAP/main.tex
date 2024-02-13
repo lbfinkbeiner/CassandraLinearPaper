@@ -15,8 +15,8 @@
 
 % If you want to reveal self-comments, activate the first of the following two
 % lines.
-\newcommand{\selfcomment}[1]{\textcolor{orange}{#1}}
-%\newcommand{\selfcomment}[1]{}
+%\newcommand{\selfcomment}[1]{\textcolor{orange}{#1}}
+\newcommand{\selfcomment}[1]{}
 
 \arxivnumber{1234.56789} % Only if you have one
 \title{\boldmath Aleitheia-Linear: Emulation of $P_L(k)$ for Massive-Neutrino Cosmologies}
@@ -91,25 +91,23 @@ pipeline is required.}
 
 Galaxy clustering and gravitational weak lensing measurements of the large-scale structure of the
 Universe can be used to obtain tight constraints on cosmological parameters. The parameter
-inference requires evaluations of the corresponding theoretical predictions for thousands of
-different cosmologies. These evaluations entail the computation of the linear-theory matter power
-spectrum, $P_L(k)$, using Boltzmann solvers such as CAMB and CLASS. Although individual calls to
+inference requires evaluations of the corresponding theoretical predictions for millions of
+different cosmologies \cite{Eggemeier}.
+These evaluations may be obtained by solving the equations of cosmological evolution
+for the linear-theory matter power, $P_L(k)$.
+Boltzmann solvers, such as CAMB and CLASS, are codes that automatically perform such evaluations.
+
+Although individual calls to
 Boltzmann solvers take time on the order of a second, the required repeated calls become a
 bottleneck of the analysis and result in total computing times of several days. Emulation has gained
 popularity by returning results 2-3 orders of magnitude more quickly, with only minor loss of
-accuracy. This is achieved by training a Gaussian process or neural network to interpolate among
-many solutions calculated by a Boltzmann code. 
+accuracy.
+
 
 \subsection{Emulation}
 \label{sec: emulation_intro}
 
-Boltzmann codes typically take on the order of three seconds to evaluate the
-linear matter power spectrum for a given cosmological configuration. In a
-modern Monte Carlo Markov Chain analysis, tens of thousands of such
-configurations will need to be evaluated. Therefore, power
-spectra evaluation becomes a bottleneck of the analysis.
-
-This motivates the use of emulators, which rely on multi-dimensional 
+Emulators rely on multi-dimensional 
 interpolation instead of the equations of evolution. Emulators are trained 
 over large numbers of power spectra either computed
 by a Boltzmann solver or from an N-body simulation. Power spectra emulation 
@@ -312,6 +310,8 @@ Massive neutrinos represent a challenge to this framework by introducing a scale
 dependence in the growth factor, which partially undermines the degeneracy. In this work, we
 extend the principle of evolution mapping to properly account for massive neutrinos and showcase
 several emulators trained under this modified framework.
+
+\textcolor{red}{This paper is organized as follows...}
 
 \section{Extending Evolution Mapping}
 
